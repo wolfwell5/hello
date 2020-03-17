@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="overLay" v-show="showOverLay" @click="fClosePop">
+    </div>
+
     <div class="qui-list">
       <input type="button" class="list-tips" style="color: #42b983;font-size: 20px;outline: #2c3e50 1px dashed"
              :value="tipsText"/>
@@ -40,21 +43,38 @@
         },
         methods: {
             btnClickEvent: function (msg) {
-                // console.log(msg)
                 this.showPop = !this.showPop;
                 this.showMsg = !this.showMsg;
-                // alert('按钮点击事件')
+                this.showOverLay = true;
             },
             fClosePop() {
                 this.showMsg = false;
+                this.showOverLay = false;
+
             },
         },
         data() {
             return {
                 showPop: false,
                 showMsg: false,
+                showOverLay: false,
             }
         },
     }
 
 </script>
+
+<style scoped>
+  .overLay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    opacity: 0.4;
+    /*display: none;*/
+
+  }
+</style>

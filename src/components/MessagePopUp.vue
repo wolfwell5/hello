@@ -1,11 +1,15 @@
 <template>
 
-  <div class="messageBox"
+
+  <div class="messageBox" @mousedown="move" id="oid"
        style="outline: #42b983 solid 1px; border: aqua 1px;width: 400px;height: 400px;    text-align-last: start">
+
+
     <div style="float:left;width:40%; ;margin-top:5px;margin-left: 15px;">交易线</div>
-    <div style="float:right;width:51%; "><span @click="closePop"
-                                               style="margin-left: 180px;margin-top: 5px;">X</span>
+    <div style="float:right;width:51%; ">
+      <span @click="closePop" style="margin-left: 180px;margin-top: 5px;">X</span>
     </div>
+
     <div>
       <hr style="width: inherit"/>
     </div>
@@ -39,18 +43,22 @@
     </div>
 
     <div style="">
-      <input type="button" value="清空" @click="clearChecked" style="margin-left: 20px;padding-left: 15px;width: 60px;"/>
+      <input type="button" value="清空" @click="clearChecked"
+             style="margin-left: 20px;padding-left: 15px;width: 60px;"/>
       <input type="button" value="取消" @click="closePop" style="margin-left: 150px;width: 60px;padding-left: 15px;"/>
       <input type="button" value="确定" style="margin-left: 10px; width: 60px;padding-left: 15px;"/>
 
     </div>
   </div>
-
 </template>
 
 <script>
+    import elDragDialog from '../directive/el-drag-dialog';
+
     export default {
         name: "messageBox",
+        directives: {elDragDialog},
+
         data() {
             return {
                 dataListMock: [
@@ -63,6 +71,8 @@
                 dataList: [],
                 choose: [],
                 inputText: '',
+                positionX: 0,
+                positionY: 0,
             }
         },
         watch: {
@@ -115,11 +125,36 @@
                 this.dataList = this.dataListMock.filter((obj) => {
                     return obj.name.toString().indexOf(this.inputText) >= 0;
                 });
-            }
-            ,
-        }
-        ,
-    }
+            },
+            move(e) {
+
+                let odiv = e.target;        //获取目标元素
+
+                //算出鼠标相对元素的位置
+                let disX = e.clientX - odiv.offsetLeft;
+                let disY = e.clientY - odiv.offsetTop;
+                document.onmousemove = (e) => {       //鼠标按下并移动的事件
+                    //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
+
+                    let left = e.clientX - disX;
+                    let top = e.clientY - disY;
+
+                    //绑定元素位置到positionX和positionY上面
+                    this.positionX = top;
+                    this.positionY = left;
+
+                    //移动当前元素
+                    odiv.style.left = left + 'px';
+                    odiv.style.top = top + 'px';
+                };
+                document.onmouseup = (e) => {
+                    document.onmousemove = null;
+                    document.onmouseup = null;
+
+                };
+            },
+        },
+    };
 </script>
 
 <style scoped>
@@ -166,5 +201,29 @@
 
   .messageBox > div div:last-child {
     border: none;
+  }
+
+  /*.el-dialog__header {*/
+  /*  background-color: red;*/
+  /*}*/
+  .overLay {
+    /*position: absolute;*/
+    /*left: 0;*/
+    /*top: 0;*/
+    /*width: 1000px;*/
+    /*height: 1000px;*/
+    /*text-align: center;*/
+    /*margin: 200px auto;*/
+    /*background: rgba(0, 0, 0, 0.5);*/
+    /*!*background-color: black;*!*/
+    /*z-index: 99999;*/
+
+    top: 0px;
+    left: 0px;
+    background: #000;
+    filter: alpha(opacity=60);
+    opacity: 0.6;
+    position: absolute;
+    z-index: 99;
   }
 </style>
